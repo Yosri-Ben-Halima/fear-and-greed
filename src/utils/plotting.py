@@ -5,6 +5,7 @@ import pandas as pd
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 from statsmodels.tsa.seasonal import seasonal_decompose
+from typing import Literal
 
 
 def plot_series_analysis(series: pd.Series) -> None:
@@ -60,7 +61,89 @@ def plot_series_analysis(series: pd.Series) -> None:
     plt.show()
 
 
-def corr_heatmap(data, title):
+def plot_first_order_deriv(data: pd.Series):
+    # Step 1: Compute the first derivative (rate of change)
+    derivative = data.diff().dropna()
+
+    # Step 2: Separate positive and negative values for the area plot
+    positive_derivative = derivative.clip(lower=0)  # Keep only positive values
+    negative_derivative = derivative.clip(upper=0)  # Keep only negative values
+
+    # Step 3: Create subplots (2 rows, 1 column)
+    fig = make_subplots(
+        rows=2,
+        cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.1,
+        subplot_titles=("Trend Component", "First Derivative"),
+    )
+
+    # Step 4: Add the line plot of the trend (subplot 1)
+    fig.add_trace(
+        go.Scatter(
+            x=data.index,
+            y=data,
+            mode="lines",
+            name="Trend Component",
+            line=dict(color="blue"),
+        ),
+        row=1,
+        col=1,
+    )
+
+    # Step 5: Add the positive area plot (subplot 2)
+    fig.add_trace(
+        go.Scatter(
+            x=positive_derivative.index,
+            y=positive_derivative,
+            mode="lines",
+            fill="tozeroy",  # Fill to the x-axis
+            name="Positive Derivative",
+            line=dict(color="green"),
+            fillcolor="rgba(0, 255, 0, 0.3)",  # Green color with transparency
+        ),
+        row=2,
+        col=1,
+    )
+
+    # Step 6: Add the negative area plot (subplot 2)
+    fig.add_trace(
+        go.Scatter(
+            x=negative_derivative.index,
+            y=negative_derivative,
+            mode="lines",
+            fill="tozeroy",  # Fill to the x-axis
+            name="Negative Derivative",
+            line=dict(color="red"),
+            fillcolor="rgba(255, 0, 0, 0.3)",  # Red color with transparency
+        ),
+        row=2,
+        col=1,
+    )
+
+
+    # Step 8: Customize axis titles for both subplots
+    fig.update_yaxes(title_text="Trend", row=1, col=1)
+    fig.update_yaxes(title_text="First Derivative", row=2, col=1)
+    # Step 7: Update layout to customize the look
+    fig.update_layout(
+        title="Trend Component and First Derivative",
+        #xaxis_title="Time",
+        yaxis_title="Derivative",
+        #template='plotly_dark',
+        height=600,  # Adjust height for better display
+        showlegend=True,
+    )
+
+    
+
+    # Step 9: Show the interactive plot
+    fig.show()
+
+
+def corr_heatmap(
+    data, title, method: Literal["kendall", "pearson", "spearman"] = "pearson"
+):
     """
     Generates a correlation heatmap for a given pd.DataFrame object.
 
@@ -75,8 +158,8 @@ def corr_heatmap(data, title):
     -------
     None
     """
-    corr = data.corr(method="kendall", numeric_only=True)
-    sns.heatmap(corr, annot=True, square=True, cmap="coolwarm")
+    corr = data.corr(method=method, numeric_only=True)
+    sns.heatmap(corr, annot=True, square=True, cmap="coolwarm", fmt=".2f")
     plt.title(title)
     plt.show()
 
