@@ -2,7 +2,6 @@ from pymongo import MongoClient
 from typing import Literal, Optional
 from datetime import datetime
 
-
 def transform_data(input_data: dict) -> dict:
     # Extract values from the input data
     points = input_data.get("points", {})
@@ -32,24 +31,28 @@ def get_data(
     client = MongoClient("mongodb://localhost:27017/")
     db = client["laevitas"]
     collection = db[type]
+    if type == "futures":
+        # Create the base query for currency and hour
+        query = {
+            "currency": {"$regex": coin, "$options": "i"},
+            "$expr": {"$eq": [{"$hour": "$date"}, 0]},
+        }
 
-    # Create the base query for currency and hour
-    query = {
-        "currency": {"$regex": coin, "$options": "i"},
-        "$expr": {"$eq": [{"$hour": "$date"}, 0]},
-    }
+        # Add date range filter if start and end dates are provided
+        if start:
+            query["date"] = {"$gte": datetime.fromisoformat(start)}
+        if end:
+            query.setdefault("date", {})["$lte"] = datetime.fromisoformat(end)
 
-    # Add date range filter if start and end dates are provided
-    if start:
-        query["date"] = {"$gte": datetime.fromisoformat(start)}
-    if end:
-        query.setdefault("date", {})["$lte"] = datetime.fromisoformat(end)
+        projection = {"currency": 1, "date": 1, "points.0": 1}
 
-    projection = {"currency": 1, "date": 1, "points.0": 1}
+        if limit is not None:
+            results = collection.find(query, projection).limit(limit)
+        else:
+            results = collection.find(query, projection)
 
-    if limit is not None:
-        results = collection.find(query, projection).limit(limit)
-    else:
-        results = collection.find(query, projection)
-
-    return [transform_data(res) for res in list(results)]
+        return [transform_data(res) for res in list(results)]
+    if type == "options":
+        return None
+    if type == "perpetuals":
+        return None

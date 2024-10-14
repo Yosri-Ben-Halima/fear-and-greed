@@ -50,7 +50,7 @@ def filter_and_aggregate(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def process_futures(futures: pd.DataFrame) -> pd.DataFrame:
+def process_futures(futures: list) -> pd.DataFrame:
     """Process the futures DataFrame."""
     df = pd.DataFrame(futures).copy()
     df = add_expiry_column(df)
