@@ -125,11 +125,11 @@ def plot_first_order_deriv(data: pd.Series):
     # Step 8: Customize axis titles for both subplots
     fig.update_yaxes(title_text="Trend", row=1, col=1)
     fig.update_yaxes(title_text="First Derivative", row=2, col=1)
+    fig.update_xaxes(title_text="Time", row=2, col=1)
     # Step 7: Update layout to customize the look
     fig.update_layout(
         title="Trend Component and First Derivative",
-        #xaxis_title="Time",
-        yaxis_title="Derivative",
+        #yaxis_title="Derivative",
         #template='plotly_dark',
         height=600,  # Adjust height for better display
         showlegend=True,
