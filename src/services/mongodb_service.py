@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from typing import Literal, Optional
 from datetime import datetime
 
-def transform_data(input_data: dict) -> dict:
+def parse_futures(input_data: dict) -> dict:
     # Extract values from the input data
     points = input_data.get("points", {})
 
@@ -51,7 +51,7 @@ def get_data(
         else:
             results = collection.find(query, projection)
 
-        return [transform_data(res) for res in list(results)]
+        return [parse_futures(res) for res in list(results)]
     if type == "options":
         return None
     if type == "perpetuals":
