@@ -1,7 +1,13 @@
 from .scaling import z_score_normalize, min_max_scale
 from .compare_date import geq
-from .futures_preprocessing import process_futures
-from .plotting import plot_series_analysis, corr_heatmap, pairplot, signal_decomp, plot_first_order_deriv
+from .data_fetchers import fetch_data
+from .plotting import (
+    plot_series_analysis,
+    corr_heatmap,
+    pairplot,
+    signal_decomp,
+    plot_first_order_deriv,
+)
 from .stats_tests import adf_test
 
 
@@ -9,7 +15,9 @@ __all__ = [
     "pairplot",
     "adf_test",
     "signal_decomp",
+    "fetch_data",
     "plot_first_order_deriv",
+    "process_options_and_pc",
     "geq",
     "plot_series_analysis",
     "corr_heatmap",

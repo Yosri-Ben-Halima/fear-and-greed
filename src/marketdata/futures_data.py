@@ -1,8 +1,7 @@
 from typing import Literal
 import pandas as pd
 from .crypto_market_data import CryptoMarketData
-from src.utils import geq, process_futures
-from src.services import get_data
+from src.utils import geq, fetch_data
 
 
 class FuturesData(CryptoMarketData):
@@ -18,9 +17,7 @@ class FuturesData(CryptoMarketData):
         self.__start = start
         self.__end = end
 
-        self.__historical_data = process_futures(
-            get_data(self.__currency, self.type(), self.__start, self.__end)
-        )
+        self.__historical_data = fetch_data(self.__currency, self.type(), self.__start, self.__end)
         super().__init__()
 
     @classmethod
@@ -41,9 +38,7 @@ class FuturesData(CryptoMarketData):
             pass
         else:
             self.__currency = currency
-            self.__historical_data = process_futures(
-                get_data(self.__currency, self.type(), self.__start, self.__end)
-            )
+            self.__historical_data = fetch_data(self.__currency, self.type(), self.__start, self.__end)
 
     @property
     def start(self) -> str:
@@ -56,9 +51,7 @@ class FuturesData(CryptoMarketData):
                 self.__historical_data.index >= start
             ]
         else:
-            df = process_futures(
-                get_data(self.__currency, self.type(), start, self.__start)
-            )[:-1]
+            df = fetch_data(self.__currency, self.type(), start, self.__start)[:-1]
             self.__historical_data = pd.concat(
                 [df, self.__historical_data], axis=0, ignore_index=True
             )
@@ -75,9 +68,7 @@ class FuturesData(CryptoMarketData):
                 self.__historical_data.index <= end
             ]
         else:
-            df = process_futures(
-                get_data(self.__currency, self.type(), self.__end, end)
-            )[1:]
+            df = fetch_data(self.__currency, self.type(), self.__end, end)[1:]
             self.__historical_data = pd.concat(
                 [self.__historical_data, df], axis=0, ignore_index=True
             )

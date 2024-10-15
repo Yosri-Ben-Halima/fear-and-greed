@@ -1,6 +1,7 @@
 from datetime import datetime
 import re
 import pandas as pd
+from typing import Literal
 
 
 def parse_expiry(currency):
@@ -41,12 +42,30 @@ def calculate_annualized_basis(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def filter_and_aggregate(df: pd.DataFrame) -> pd.DataFrame:
-    """Filter and group the df DataFrame."""
-    df = df[~(df["days_to_expiry"] == 0)]
-    df1 = df.groupby("date").mean(numeric_only=True)[["price", "annualized_basis"]]
-    df2 = df.groupby("date").sum(numeric_only=True)[["open_interest", "volume"]]
-    df = pd.concat([df1, df2], axis=1)
+def filter(df):
+    """Filter the futures DataFrame to drop inf annualized basis."""
+    return df[~(df["days_to_expiry"] == 0)]
+
+
+def aggregate(
+    df: pd.DataFrame, type: Literal["options", "futures", "perpetuls", "pc_ratio"]
+) -> pd.DataFrame:
+    """Group the DataFrame."""
+    if type == "futures":
+        df1 = df.groupby("date").mean(numeric_only=True)[["price", "annualized_basis"]]
+        df2 = df.groupby("date").sum(numeric_only=True)[["open_interest", "volume"]]
+        df = pd.concat([df1, df2], axis=1)
+    elif type == "options":
+        df1 = df.groupby("date").mean(numeric_only=True)[
+            ["price", "atm_implied_vol", "25delta_risk_reversal", "25delta_butterfly"]
+        ]
+        df2 = df.groupby("date").sum(numeric_only=True)[["open_interest", "volume"]]
+        df = pd.concat([df1, df2], axis=1)
+    elif type == "perpetuls":
+        pass
+    elif type == "pc_ratio":
+        df.groupby("date").mean(numeric_only=True)
+
     return df
 
 
@@ -56,5 +75,16 @@ def process_futures(futures: list) -> pd.DataFrame:
     df = add_expiry_column(df)
     df = calculate_days_to_expiry(df)
     df = calculate_annualized_basis(df)
-    df = filter_and_aggregate(df)
+    df = filter(df)
+    df = aggregate(df, "futures")
     return df[["price", "annualized_basis", "open_interest", "volume"]]
+
+
+def process_options_and_pc(options: list, pc_ratio: list) -> pd.DataFrame:
+    """Process the options and P/C ratio DataFrames."""
+    df1 = pd.DataFrame(options)
+    df1 = aggregate(df1, "options")
+    df2 = pd.DataFrame(pc_ratio)
+    df2 = aggregate(df2, "options")
+    df = pd.merge(df1, df2, left_index=True, right_index=True)
+    return df

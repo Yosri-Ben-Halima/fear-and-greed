@@ -1,7 +1,7 @@
 from typing import Literal
 import pandas as pd
 from .crypto_market_data import CryptoMarketData
-from src.utils import geq
+from src.utils import geq, fetch_data
 
 class OptionsData(CryptoMarketData):
     __type = "options"
@@ -16,7 +16,7 @@ class OptionsData(CryptoMarketData):
         self.__start = start
         self.__end = end
 
-        self.__historical_data = None
+        self.__historical_data = fetch_data(self.__currency, self.type(), self.__start, self.__end)
         super().__init__()
 
     @classmethod
@@ -37,7 +37,7 @@ class OptionsData(CryptoMarketData):
             pass
         else:
             self.__currency = currency
-            pass # Implement logic
+            fetch_data(self.__currency, self.type(), self.__start, self.__end)
 
     @property
     def start(self) -> str:
@@ -50,7 +50,7 @@ class OptionsData(CryptoMarketData):
                 self.__historical_data.index >= start
             ]
         else:
-            df = None
+            df = fetch_data(self.__currency, self.type(), start, self.__start)[:-1]
             self.__historical_data = pd.concat(
                 [df, self.__historical_data], axis=0, ignore_index=True
             )
@@ -67,7 +67,7 @@ class OptionsData(CryptoMarketData):
                 self.__historical_data.index <= end
             ]
         else:
-            df = None
+            df = fetch_data(self.__currency, self.type(), self.__end, end)[1:]
             self.__historical_data = pd.concat(
                 [self.__historical_data, df], axis=0, ignore_index=True
             )
