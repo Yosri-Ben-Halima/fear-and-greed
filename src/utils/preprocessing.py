@@ -64,7 +64,7 @@ def aggregate(
     elif type == "perpetuls":
         pass
     elif type == "pc_ratio":
-        df.groupby("date").mean(numeric_only=True)
+        df = df.groupby("date").mean(numeric_only=True)[["pc_ratio"]]
 
     return df
 
@@ -85,6 +85,6 @@ def process_options_and_pc(options: list, pc_ratio: list) -> pd.DataFrame:
     df1 = pd.DataFrame(options)
     df1 = aggregate(df1, "options")
     df2 = pd.DataFrame(pc_ratio)
-    df2 = aggregate(df2, "options")
+    df2 = aggregate(df2, "pc_ratio")
     df = pd.merge(df1, df2, left_index=True, right_index=True)
     return df
