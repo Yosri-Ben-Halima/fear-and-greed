@@ -10,50 +10,60 @@ The **Fear & Greed Index** is designed to measure the sentiment of the crypto ma
 fear_greed_index_project/
 │
 ├── data/                     # Folder for raw data, preprocessed data, etc.
-│   ├── raw/                  # Raw data collected from APIs
+│   ├── raw/                  # Raw data collected from APIs - Untracked
 │   └── processed/            # Cleaned and preprocessed data
 │
-├── notebooks/                # Jupyter notebooks for exploratory data analysis (EDA)
-│   └── eda_fear_greed.ipynb  # Example notebook for EDA
+├── notebooks/                # Jupyter notebooks for exploratory data analysis
+│   ├── BTC/                      # Example notebook for EDA
+│   │   └── futures_eda.ipynb
+│   ├── ETH/
+│   │    └── futures_eda.ipynb
+│   └── FuturesFeatures.md
 │
-├── src/                      # Main source code for the project
+├── src/                   # Main source code for the project
 │   ├── __init__.py           # Marks the src directory as a Python module
 │   ├── market_data/          # Folder for data fetching and handling classes
 │   │   ├── __init__.py
 │   │   ├── crypto_market_data.py       # Base class for market data
-│   │   ├── perpetual_swaps_data.py     # Handles perpetual swaps data
-│   │   ├── futures_data.py             # Handles futures data and annualized basis
-│   │   └── options_data.py             # Handles options data (IV and skew)
+│   │   ├── perpetuals_data.py          # Handles perpetuals data
+│   │   ├── futures_data.py             # Handles futures data
+│   │   └── options_data.py             # Handles options data
 │   │
 │   ├── calculators/          # Folder for classes that perform index calculations
 │   │   ├── __init__.py
 │   │   └── fear_greed_calculator.py    # Main class for calculating Fear & Greed Index
 │   │
-│   ├── validation/           # Folder for backtesting and validation classes
+│   ├── backtesting/           # Folder for backtesting and validation classes
 │   │   ├── __init__.py
 │   │   └── backtesting.py             # Class for backtesting the index
 │   │
-│   └── utils/                # Utility functions (data normalization, scaling, etc.)
-│       ├── __init__.py
-│       └── normalization.py          # Functions to normalize data (e.g., z-score, min-max)
+│   └── utils/                
+│       ├── compare_date.py
+│       ├── data_fetchers.py
+│       ├── mongodb_service.py
+│       ├── plotting.py
+│       ├── preprocessing.py
+│       ├── scaling.py
+│       ├── stats_tests.py
+│       └── __init__.py          
 │
 ├── tests/                    # Unit tests for the project
-│   ├── test_perpetual_swaps.py        # Tests for perpetual swaps data handling
-│   ├── test_futures_data.py           # Tests for futures data handling
-│   ├── test_options_data.py           # Tests for options data handling
-│   ├── test_fear_greed_calculator.py   # Tests for Fear & Greed index calculation
-│   └── test_backtesting.py            # Tests for backtesting logic
+│   ├── test_perpetualsdata.py        # Tests for perpetual swaps data handling
+│   ├── test_futuresdata.py           # Tests for futures data handling
+│   ├── test_optionsdata.py           # Tests for options data handling
+│   ├── test_feargreedcalculator.py   # Tests for Fear & Greed index calculation
+│   └── test_backtesting.py           # Tests for backtesting logic
 │
 ├── config/                   # Configuration files for APIs, environment variables, etc.
-│   ├── config.yml            # Configuration file for API keys and other settings
-│   └── secrets.yml           # Separate file for sensitive information (e.g., API keys)
+│   ├── config.yml            # Configuration file and other settings
+│   └── secrets.yml           # Separate file for sensitive information (e.g., API keys, DB credentials) - Untracked
 │
-├── logs/                     # Log files for the system (for debugging or audit purposes)
+├── logs/                     # Log files for the system (for debugging or audit purposes) - Untracked
 │   └── app.log               # Example log file
 │
-├── .gitignore                # Git ignore file to avoid committing unnecessary files (e.g., data, logs)
-├── README.md                 # Project documentation (overview, instructions, etc.)
+├── .gitignore                # Git ignore file to avoid committing unnecessary files
+├── README.md                 # Project documentation
 ├── requirements.txt          # Python dependencies required for the project
-└── setup.py                  # Script to install the project as a package (if needed)
+└── setup.py                  # Script to install the project as a package
 
 ```
