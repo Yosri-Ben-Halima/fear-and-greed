@@ -1,7 +1,7 @@
 from typing import Literal
 import pandas as pd
 
-from .preprocessing import process_futures, process_options_and_pc
+from .preprocessing import process_futures, process_options_and_pc, process_perps
 from .mongodb_service import get_data
 
 def fetch_futures_data(
@@ -21,7 +21,7 @@ def fetch_options_data(
 def fetch_perpetuals_data(
     coin: Literal["BTC", "ETH"], start: str, end: str
 ) -> pd.DataFrame:
-    pass
+    return process_perps(get_data(coin, "perpetuals", start, end))
 
 
 def fetch_data(coin: Literal["BTC", "ETH"], type: Literal["futures", "options", "perpetuals"] , start: str, end: str) -> pd.DataFrame:

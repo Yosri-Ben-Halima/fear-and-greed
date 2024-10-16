@@ -62,7 +62,13 @@ def aggregate(
         df2 = df.groupby("date").sum(numeric_only=True)[["open_interest", "volume"]]
         df = pd.concat([df1, df2], axis=1)
     elif type == "perpetuls":
-        pass
+        df1 = df.groupby("date").mean(numeric_only=True)[
+            ["price", "funding"]
+        ]
+        df2 = df.groupby("date").sum(numeric_only=True)[
+            ["open_interest", "volume", "liquidations_long", "liquidations_short"]
+        ]
+        df = pd.concat([df1, df2], axis=1)
     elif type == "pc_ratio":
         df = df.groupby("date").mean(numeric_only=True)[["pc_ratio"]]
 
@@ -77,7 +83,7 @@ def process_futures(futures: list) -> pd.DataFrame:
     df = calculate_annualized_basis(df)
     df = filter(df)
     df = aggregate(df, "futures")
-    return df[["price", "annualized_basis", "open_interest", "volume"]]
+    return df
 
 
 def process_options_and_pc(options: list, pc_ratio: list) -> pd.DataFrame:
@@ -87,4 +93,11 @@ def process_options_and_pc(options: list, pc_ratio: list) -> pd.DataFrame:
     df2 = pd.DataFrame(pc_ratio)
     df2 = aggregate(df2, "pc_ratio")
     df = pd.merge(df1, df2, left_index=True, right_index=True)
+    return df
+
+
+def process_perps(perps: list) -> pd.DataFrame:
+    """Process the perps DataFrame."""
+    df = pd.DataFrame(perps).copy()
+    df = aggregate(df, "perpetuls")
     return df
