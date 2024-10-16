@@ -62,7 +62,7 @@ class CryptoMarketData:
             file_name += ".pkl"
         with open(file_name, "wb") as f:
             pickle.dump(self, f)
-        print(f"PerpetualsData object saved to {file_name}")
+        print(f"{str(self.__class__).split("'")[1].split('.')[-1]} object saved to {file_name}")
 
     @classmethod
     def load(cls, file_name: str):
@@ -70,7 +70,7 @@ class CryptoMarketData:
             file_name += ".pkl"
         with open(file_name, "rb") as f:
             perp_data = pickle.load(f)
-        print(f"PerpetualsData object loaded from {file_name}")
+        print(f"{cls.__name__} object loaded from {file_name}")
         return perp_data
 
     def copy(self):
