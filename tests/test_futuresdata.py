@@ -33,15 +33,33 @@ class TestFuturesData(unittest.TestCase):
 
     def test_start_property(self):
         """Test the start date property getter and setter."""
+
+        old_length = len(self.futures_data.historical_data)
+
+        # Test case for setting an later start date
         self.futures_data.start = "2023-06-01"
         self.assertEqual(self.futures_data.start, "2023-06-01")
         self.assertTrue((self.futures_data.historical_data.index >= "2023-06-01").all())
 
+        # Test case for setting an earlier start date
+        self.futures_data.start = "2022-12-31"
+        self.assertEqual(self.futures_data.start, "2022-12-31")
+        self.assertGreater(len(self.futures_data.historical_data), old_length)
+
+
     def test_end_property(self):
         """Test the end date property getter and setter."""
+        old_length = len(self.futures_data.historical_data)
+
+        # Test case for setting an earlier start date
         self.futures_data.end = "2023-11-30"
         self.assertEqual(self.futures_data.end, "2023-11-30")
         self.assertTrue((self.futures_data.historical_data.index <= "2023-11-30").all())
+
+        # Test case for setting an earlier end date
+        self.futures_data.end = "2023-01-15"
+        self.assertEqual(self.futures_data.end, "2023-01-15")
+        self.assertLess(len(self.futures_data.historical_data), old_length)
 
     def test_historical_data(self):
         """Test that historical data contains the expected date range."""
