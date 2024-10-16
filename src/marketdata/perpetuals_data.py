@@ -17,7 +17,9 @@ class PerpetualsData(CryptoMarketData):
         self.__start = start
         self.__end = end
 
-        self.__historical_data = fetch_data(self.__currency, self.type(), self.__start, self.__end)
+        self.__historical_data = fetch_data(
+            self.__currency, self.type(), self.__start, self.__end
+        )
         super().__init__()
 
     @classmethod
@@ -38,7 +40,9 @@ class PerpetualsData(CryptoMarketData):
             pass
         else:
             self.__currency = currency
-            self.__historical_data = fetch_data(self.__currency, self.type(), self.__start, self.__end)
+            self.__historical_data = fetch_data(
+                self.__currency, self.type(), self.__start, self.__end
+            )
 
     @property
     def start(self) -> str:

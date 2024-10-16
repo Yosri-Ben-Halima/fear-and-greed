@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 import copy
 
+
 class CryptoMarketData:
     def __init__(self):
         pass
@@ -30,22 +31,26 @@ class CryptoMarketData:
             std_col = self.historical_data[column].std()
 
             # Calculate Z-scores
-            self.historical_data[f'{column}_z_score'] = (self.historical_data[column] - mean_col) / std_col
+            self.historical_data[f"{column}_z_score"] = (
+                self.historical_data[column] - mean_col
+            ) / std_col
 
             # Winsorize the outliers (clamp the values within the threshold)
             self.historical_data[column] = np.where(
-                self.historical_data[f'{column}_z_score'] > threshold, 
-                mean_col + threshold * std_col, 
+                self.historical_data[f"{column}_z_score"] > threshold,
+                mean_col + threshold * std_col,
                 np.where(
-                    self.historical_data[f'{column}_z_score'] < -threshold, 
-                    mean_col - threshold * std_col, 
-                    self.historical_data[column]
-                )
+                    self.historical_data[f"{column}_z_score"] < -threshold,
+                    mean_col - threshold * std_col,
+                    self.historical_data[column],
+                ),
             )
 
         # Drop the Z-score columns after winsorizing
-        self.historical_data.drop(columns=[f'{col}_z_score' for col in numerical_cols], inplace=True)
-        
+        self.historical_data.drop(
+            columns=[f"{col}_z_score" for col in numerical_cols], inplace=True
+        )
+
         return self
 
     def interpolate_missing_values(self):
